@@ -1,0 +1,41 @@
+# ===============================
+# Python cache & compiled files
+# ===============================
+__pycache__/
+*.py
+*.pyc
+*.pyo
+*.pyd
+
+# ===============================
+# Virtual environment
+# ===============================
+.venv/
+venv/
+env/
+
+# ===============================
+# IDE / Editor settings
+# ===============================
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ===============================
+# Operating system files
+# ===============================
+.DS_Store
+Thumbs.db
+
+# ===============================
+# Logs & temporary files
+# ===============================
+*.log
+*.tmp
+
+# ===============================
+# Project note
+# ===============================
+# This project currently focuses on documentation.
+# The gitignore file is prepared for future Python development.

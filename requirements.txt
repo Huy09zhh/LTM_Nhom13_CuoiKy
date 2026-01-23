@@ -1,0 +1,16 @@
+# ===============================
+# Python dependencies
+# ===============================
+# This project currently does not require external Python libraries.
+# The file is prepared for future development and extension.
+
+# Example libraries that may be used in networking projects:
+# socket
+# asyncio
+# threading
+
+# ===============================
+# Project note
+# ===============================
+# Requirements will be updated when the project includes
+# executable source code.

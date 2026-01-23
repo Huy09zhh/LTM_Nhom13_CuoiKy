@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Upload Multi File Demo</title>
+  <style>
+    body{font-family:system-ui,Segoe UI,Arial;margin:0;background:#0b1220;color:#e7eefc}
+    .wrap{max-width:720px;margin:40px auto;padding:22px}
+    .card{background:#111b2e;border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:18px}
+    h1{margin:0 0 8px;font-size:18px}
+    p{margin:0 0 14px;color:#9ab0d4;font-size:13px;line-height:1.4}
+    button{margin-top:10px;padding:10px 12px;border:0;border-radius:10px;
+      background:linear-gradient(135deg,#6ea8ff,#2dd4bf);color:#081021;font-weight:700;cursor:pointer}
+    .btn2{background:rgba(255,255,255,.08);color:#e7eefc;border:1px solid rgba(255,255,255,.12);font-weight:600}
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    .list{margin-top:12px;padding:10px;border-radius:10px;background:#0f1729;border:1px solid rgba(255,255,255,.08)}
+    .list div{font-size:13px;color:#e7eefc;margin:4px 0}
+    .msg{margin-top:12px;padding:10px;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08)}
+    pre{white-space:pre-wrap;background:#0f1729;border:1px solid rgba(255,255,255,.08);padding:10px;border-radius:10px;color:#e7eefc}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Upload Multi File (Web Demo)</h1>
+      <p>Chọn file nhiều lần (ở nhiều thư mục khác nhau) → danh sách sẽ được cộng dồn.</p>
+
+      <input id="picker" type="file" multiple style="display:none" />
+
+      <div class="row">
+        <button id="btnPick" type="button">Chọn thêm file</button>
+        <button id="btnUpload" type="button" class="btn2">Upload</button>
+        <button id="btnClear" type="button" class="btn2">Xóa danh sách</button>
+      </div>
+
+      <div class="list" id="list">Chưa có file.</div>
+
+      <div class="msg" id="msg" style="display:none"></div>
+      <pre id="log" style="display:none"></pre>
+    </div>
+  </div>
+
+<script>
+  const picker = document.getElementById('picker');
+  const btnPick = document.getElementById('btnPick');
+  const btnUpload = document.getElementById('btnUpload');
+  const btnClear = document.getElementById('btnClear');
+  const list = document.getElementById('list');
+  const msg = document.getElementById('msg');
+  const log = document.getElementById('log');
+
+  // Lưu file đã chọn qua nhiều lần
+  let selected = []; // array of File
+
+  function renderList(){
+    if(selected.length === 0){
+      list.textContent = "Chưa có file.";
+      return;
+    }
+    list.innerHTML = selected.map((f,i)=>`<div>${i+1}. ${f.name} (${Math.round(f.size/1024)} KB)</div>`).join("");
+  }
+
+  btnPick.onclick = () => picker.click();
+
+  picker.onchange = () => {
+    const newly = Array.from(picker.files || []);
+    // cộng dồn; nếu trùng tên + size thì bỏ qua (đỡ bị duplicate)
+    for(const f of newly){
+      const dup = selected.some(x => x.name === f.name && x.size === f.size && x.lastModified === f.lastModified);
+      if(!dup) selected.push(f);
+    }
+    picker.value = ""; // cho phép chọn lại cùng file lần sau
+    renderList();
+  };
+
+  btnClear.onclick = () => {
+    selected = [];
+    msg.style.display = "none";
+    log.style.display = "none";
+    renderList();
+  };
+
+  btnUpload.onclick = async () => {
+    msg.style.display = "none";
+    log.style.display = "none";
+
+    if(selected.length === 0){
+      msg.style.display = "block";
+      msg.textContent = "Bạn chưa chọn file.";
+      return;
+    }
+
+    btnUpload.disabled = true;
+
+    const fd = new FormData();
+    selected.forEach(f => fd.append("files", f));
+
+    try{
+      const res = await fetch("/upload", { method: "POST", body: fd });
+      const data = await res.json();
+
+      msg.style.display = "block";
+      msg.textContent = data.ok ? data.msg : ("Upload thất bại: " + (data.error || "Unknown"));
+
+      if(data.detail){
+        log.style.display = "block";
+        log.textContent = data.detail;
+      }
+
+      if(data.ok){
+        // nếu muốn: tự clear sau khi upload thành công
+        // selected = []; renderList();
+      }
+    }catch(e){
+      msg.style.display = "block";
+      msg.textContent = "Upload lỗi: " + e;
+    }finally{
+      btnUpload.disabled = false;
+    }
+  };
+
+  renderList();
+</script>
+</body>
+</html>

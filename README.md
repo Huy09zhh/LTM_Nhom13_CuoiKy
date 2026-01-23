@@ -29,9 +29,12 @@
 > Lưu ý: Repository hiện tại **không triển khai code cụ thể**, chủ yếu tập trung vào tài liệu tổng hợp.
 
 ## 5. Cấu trúc thư mục
-- README.md
-- .gitignore
-- requirements.txt
+```text
+server/     : TCP Server
+client/     : TCP Client
+web/        : Flask Web demo
+common/     : Hàm dùng chung
+uploads/    : File được upload lên server
 ## 6. Mục tiêu của dự án
 - Hệ thống hóa kiến thức môn Lập trình mạng
 - Hiểu rõ các nguyên lý hoạt động của chương trình mạng
